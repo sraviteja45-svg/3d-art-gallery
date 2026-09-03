@@ -10,7 +10,8 @@ const BASE = import.meta.env.BASE_URL;
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0xeeeeee);
+scene.background = new THREE.Color(0x090313);
+scene.fog = new THREE.Fog(0x090313, 18, 42);
 
 // ==============================
 // LOADING SCREEN
@@ -28,10 +29,11 @@ loadingScreen.style.display = 'flex';
 loadingScreen.style.alignItems = 'center';
 loadingScreen.style.justifyContent = 'center';
 
-loadingScreen.style.background = '#111';
+loadingScreen.style.background = '#090313';
 loadingScreen.style.color = 'white';
 
 loadingScreen.style.fontFamily = 'Arial, sans-serif';
+loadingScreen.style.letterSpacing = '2px';
 loadingScreen.style.fontSize = '28px';
 
 loadingScreen.style.zIndex = '2000';
@@ -52,8 +54,8 @@ minimap.style.right = '20px';
 minimap.style.width = '180px';
 minimap.style.height = '180px';
 
-minimap.style.background = 'rgba(20, 20, 20, 0.85)';
-minimap.style.border = '2px solid white';
+minimap.style.background = 'rgba(9, 3, 19, 0.9)';
+minimap.style.border = '2px solid rgba(80, 230, 255, 0.75)';
 minimap.style.borderRadius = '10px';
 
 minimap.style.zIndex = '1000';
@@ -100,7 +102,7 @@ function createMapWall(x, z, width, height) {
     wall.style.width = `${width}px`;
     wall.style.height = `${height}px`;
 
-    wall.style.background = 'white';
+    wall.style.background = 'rgba(150, 110, 220, 0.75)';
 
     minimap.appendChild(wall);
 }
@@ -181,6 +183,16 @@ createArtworkMarker(8, -14.82);
 // Front wall artworks
 createArtworkMarker(-8, 14.82);
 createArtworkMarker(8, 14.82);
+
+// Left wall artworks
+createArtworkMarker(-14.82, -9);
+createArtworkMarker(-14.82, 0);
+createArtworkMarker(-14.82, 9);
+
+// Right wall artworks
+createArtworkMarker(14.82, -9);
+createArtworkMarker(14.82, 0);
+createArtworkMarker(14.82, 9);
 
 
 // ==============================
@@ -267,7 +279,9 @@ const floorGeometry = new THREE.PlaneGeometry(
 );
 
 const floorMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcccccc
+    color: 0x130b1d,
+    roughness: 0.78,
+    metalness: 0.12
 });
 
 const floor = new THREE.Mesh(
@@ -302,7 +316,9 @@ function createWall(
     );
 
     const wallMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffff
+        color: 0x1a1024,
+        roughness: 0.82,
+        metalness: 0.08
     });
 
     const wall = new THREE.Mesh(
@@ -385,6 +401,35 @@ createWall(
 
 
 // ==============================
+// NEON WALL ACCENTS
+// ==============================
+
+function addNeonStrip(x, y, z, width, rotationY, color) {
+
+    const strip = new THREE.Mesh(
+        new THREE.BoxGeometry(width, 0.035, 0.035),
+        new THREE.MeshStandardMaterial({
+            color: color,
+            emissive: color,
+            emissiveIntensity: 2.2,
+            roughness: 0.3
+        })
+    );
+
+    strip.position.set(x, y, z);
+    strip.rotation.y = rotationY;
+    scene.add(strip);
+}
+
+// Low-profile accent lines that reinforce the psychedelic atmosphere.
+addNeonStrip(0, 0.45, -14.68, 26, 0, 0x35e8ff);
+addNeonStrip(0, 0.45, 14.68, 26, 0, 0xff45c8);
+
+addNeonStrip(-14.68, 0.45, 0, 26, Math.PI / 2, 0x8c5cff);
+addNeonStrip(14.68, 0.45, 0, 26, Math.PI / 2, 0x35e8ff);
+
+
+// ==============================
 // CEILING
 // ==============================
 
@@ -394,7 +439,8 @@ const ceilingGeometry = new THREE.PlaneGeometry(
 );
 
 const ceilingMaterial = new THREE.MeshStandardMaterial({
-    color: 0xf5f5f5,
+    color: 0x10091a,
+    roughness: 0.9,
     side: THREE.DoubleSide
 });
 
@@ -415,8 +461,8 @@ scene.add(ceiling);
 // ==============================
 
 const ambientLight = new THREE.AmbientLight(
-    0xffffff,
-    0.4
+    0x9b7cff,
+    0.22
 );
 
 scene.add(ambientLight);
@@ -430,15 +476,17 @@ function addSpotlight(
     z,
     targetX,
     targetY,
-    targetZ
+    targetZ,
+    color = 0xffffff,
+    intensity = 1.6
 ) {
 
     const spot = new THREE.SpotLight(
-        0xffffff,
-        1.2,
-        20,
-        Math.PI / 6,
-        0.3
+        color,
+        intensity,
+        22,
+        Math.PI / 5,
+        0.35
     );
 
     spot.position.set(
@@ -462,37 +510,103 @@ function addSpotlight(
 }
 
 
-// Gallery spotlights
+// Gallery spotlights — neon psychedelic palette
 
 addSpotlight(
-    -8, 4, -5,
-    0, 1.5, -5
+    -8, 4.6, -6,
+    -8, 2.2, -14.7,
+    0x5d7cff,
+    2.0
 );
 
 addSpotlight(
-    0, 4, -5,
-    0, 1.5, -5
+    0, 4.6, -6,
+    0, 2.2, -14.7,
+    0xff45c8,
+    2.0
 );
 
 addSpotlight(
-    8, 4, -5,
-    0, 1.5, -5
+    8, 4.6, -6,
+    8, 2.2, -14.7,
+    0x35e8ff,
+    2.0
 );
 
 addSpotlight(
-    -8, 4, 5,
-    0, 1.5, 5
+    -8, 4.6, 6,
+    -8, 2.2, 14.7,
+    0x35e8ff,
+    2.0
 );
 
 addSpotlight(
-    0, 4, 5,
-    0, 1.5, 5
+    0, 4.6, 6,
+    0, 2.2, 14.7,
+    0xff45c8,
+    2.0
 );
 
 addSpotlight(
-    8, 4, 5,
-    0, 1.5, 5
+    8, 4.6, 6,
+    8, 2.2, 14.7,
+    0x8c5cff,
+    2.0
 );
+
+// Side-wall spotlights
+
+addSpotlight(
+    -6, 4.5, -9,
+    -14.7, 2.2, -9,
+    0x35e8ff,
+    1.8
+);
+
+addSpotlight(
+    -6, 4.5, 0,
+    -14.7, 2.2, 0,
+    0xff45c8,
+    1.8
+);
+
+addSpotlight(
+    -6, 4.5, 9,
+    -14.7, 2.2, 9,
+    0x8c5cff,
+    1.8
+);
+
+addSpotlight(
+    6, 4.5, -9,
+    14.7, 2.2, -9,
+    0x8c5cff,
+    1.8
+);
+
+addSpotlight(
+    6, 4.5, 0,
+    14.7, 2.2, 0,
+    0x35e8ff,
+    1.8
+);
+
+addSpotlight(
+    6, 4.5, 9,
+    14.7, 2.2, 9,
+    0xff45c8,
+    1.8
+);
+
+// Subtle colored wall washes
+
+const cyanWash = new THREE.PointLight(0x35e8ff, 1.5, 10);
+cyanWash.position.set(-13.8, 2.4, 0);
+scene.add(cyanWash);
+
+const pinkWash = new THREE.PointLight(0xff45c8, 1.5, 10);
+pinkWash.position.set(13.8, 2.4, 0);
+scene.add(pinkWash);
 
 
 // ==============================
@@ -506,6 +620,9 @@ camera.add(listener);
 const backgroundSound = new THREE.Audio(listener);
 
 const audioLoader = new THREE.AudioLoader();
+
+// One unchanged MP3 can be reused by every artwork.
+const ARTWORK_AUDIO = `${BASE}audio/gallery.mp3`;
 
 audioLoader.load(
     `${BASE}audio/gallery.mp3`,
@@ -596,15 +713,17 @@ function createFrame(
 
     const frameMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x222222
+            color: 0x09070d,
+            roughness: 0.38,
+            metalness: 0.55,
+            emissive: 0x28103f,
+            emissiveIntensity: 0.35
         });
 
     const thickness = 0.15;
     const depth = 0.12;
 
-
     // Top
-
     const topGeometry = new THREE.BoxGeometry(
         width + 0.3,
         thickness,
@@ -623,12 +742,9 @@ function createFrame(
     );
 
     top.rotation.y = rotationY;
-
     scene.add(top);
 
-
     // Bottom
-
     const bottomGeometry = new THREE.BoxGeometry(
         width + 0.3,
         thickness,
@@ -647,11 +763,12 @@ function createFrame(
     );
 
     bottom.rotation.y = rotationY;
-
     scene.add(bottom);
 
-
-    // Left
+    // Local X axis transformed by Y rotation
+    const sideOffset = width / 2 + 0.075;
+    const localX = Math.cos(rotationY) * sideOffset;
+    const localZ = -Math.sin(rotationY) * sideOffset;
 
     const sideGeometry = new THREE.BoxGeometry(
         thickness,
@@ -659,37 +776,34 @@ function createFrame(
         depth
     );
 
+    // Left
     const left = new THREE.Mesh(
         sideGeometry,
         frameMaterial
     );
 
     left.position.set(
-        x - width / 2 - 0.075,
+        x - localX,
         y,
-        z
+        z - localZ
     );
 
     left.rotation.y = rotationY;
-
     scene.add(left);
 
-
     // Right
-
     const right = new THREE.Mesh(
         sideGeometry,
         frameMaterial
     );
 
     right.position.set(
-        x + width / 2 + 0.075,
+        x + localX,
         y,
-        z
+        z + localZ
     );
 
     right.rotation.y = rotationY;
-
     scene.add(right);
 }
 
@@ -836,7 +950,7 @@ addArtwork(
     4,
     'The Dream That Ate Itself',
     'A dark psychedelic composition filled with intricate organic forms, surreal creatures, vivid colors and dense interconnected patterns.',
-    '/audio/artwork1.mp3'
+    ARTWORK_AUDIO
 );
 
 addArtwork(
@@ -848,7 +962,7 @@ addArtwork(
     4,
     'SubMatrix',
     'A highly detailed psychedelic composition filled with geometric patterns, vivid colors and complex forms.',
-    '/audio/artwork2.mp3'
+    ARTWORK_AUDIO
 );
 
 addArtwork(
@@ -860,7 +974,7 @@ addArtwork(
     4,
     'Psychedelic Mandala',
     'A symmetrical psychedelic artwork built around a colorful central mandala-like design.',
-    '/audio/artwork3.mp3'
+    ARTWORK_AUDIO
 );
 
 
@@ -877,7 +991,7 @@ addArtwork(
     3.5,
     'Psychedelic Portrait',
     'A dark psychedelic portrait surrounded by vivid neon colors and intricate visual patterns.',
-    '/audio/artwork4.mp3'
+    ARTWORK_AUDIO
 );
 
 addArtwork(
@@ -889,7 +1003,89 @@ addArtwork(
     3.5,
     'Cosmic Geometry',
     'A colorful abstract composition combining geometric shapes, patterns and cosmic imagery.',
-    '/audio/artwork5.mp3'
+    ARTWORK_AUDIO
+);
+
+
+// ==============================
+// LEFT WALL ARTWORK
+// ==============================
+
+addArtwork(
+    `${BASE}assets/side1.jpg`,
+    -14.82,
+    2.6,
+    -9,
+    Math.PI / 2,
+    4.2,
+    'Neon Forest Dreamscape',
+    'A flowing psychedelic landscape filled with vivid blue, green, orange and violet forms.',
+    ARTWORK_AUDIO
+);
+
+addArtwork(
+    `${BASE}assets/side2.jpg`,
+    -14.82,
+    2.6,
+    0,
+    Math.PI / 2,
+    4.2,
+    'Tree of Infinite Color',
+    'A surreal tree surrounded by luminous branches, spirals and a dense field of psychedelic color.',
+    ARTWORK_AUDIO
+);
+
+addArtwork(
+    `${BASE}assets/side3.jpg`,
+    -14.82,
+    2.6,
+    9,
+    Math.PI / 2,
+    4.2,
+    'Monochrome Spiral',
+    'A hypnotic black-and-white composition built from spirals, organic lines and geometric forms.',
+    ARTWORK_AUDIO
+);
+
+
+// ==============================
+// RIGHT WALL ARTWORK
+// ==============================
+
+addArtwork(
+    `${BASE}assets/side4.jpg`,
+    14.82,
+    2.6,
+    -9,
+    -Math.PI / 2,
+    4.2,
+    'Fluorescent Dreamland',
+    'A glowing psychedelic world of neon waterfalls, strange landscapes and cosmic details.',
+    ARTWORK_AUDIO
+);
+
+addArtwork(
+    `${BASE}assets/side5.jpg`,
+    14.82,
+    2.6,
+    0,
+    -Math.PI / 2,
+    4.2,
+    'Rainbow Face',
+    'A vibrant psychedelic portrait composed from flowing rainbow lines and symmetrical forms.',
+    ARTWORK_AUDIO
+);
+
+addArtwork(
+    `${BASE}assets/side6.jpg`,
+    14.82,
+    2.6,
+    9,
+    -Math.PI / 2,
+    4.2,
+    'Cosmic Doodle Garden',
+    'A highly saturated psychedelic composition filled with playful creatures, patterns and bold colors.',
+    ARTWORK_AUDIO
 );
 
 
@@ -913,7 +1109,7 @@ function createGalleryDoor() {
 
     const frameMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x3a2415,
+            color: 0x120b1a,
             roughness: 0.5,
             metalness: 0.1
         });
@@ -987,7 +1183,7 @@ function createGalleryDoor() {
 
     const doorMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x4a2f1c,
+            color: 0x0d0814,
             roughness: 0.65,
             metalness: 0.05
         });
@@ -1045,7 +1241,7 @@ function createGalleryDoor() {
 
     const panelMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x2f1d12,
+            color: 0x160c22,
             roughness: 0.55
         });
 
@@ -1116,7 +1312,7 @@ function createGalleryDoor() {
 
     const stripMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x6b4327,
+            color: 0x7137a6,
             roughness: 0.45,
             metalness: 0.15
         });
@@ -1170,7 +1366,7 @@ function createGalleryDoor() {
 
     const handleMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0xc9a227,
+            color: 0x35e8ff,
             roughness: 0.25,
             metalness: 0.8
         });
@@ -1217,7 +1413,7 @@ function createGalleryDoor() {
 
     const archMaterial =
         new THREE.MeshStandardMaterial({
-            color: 0x3a2415,
+            color: 0x120b1a,
             roughness: 0.5,
             metalness: 0.1
         });
@@ -1325,14 +1521,15 @@ infoBox.style.width = '420px';
 infoBox.style.padding = '20px';
 
 infoBox.style.background =
-    'rgba(0, 0, 0, 0.85)';
+    'rgba(9, 3, 19, 0.92)';
 
 infoBox.style.color = 'white';
 
 infoBox.style.border =
-    '1px solid rgba(255, 255, 255, 0.3)';
+    '1px solid rgba(120, 220, 255, 0.55)';
 
-infoBox.style.borderRadius = '12px';
+infoBox.style.borderRadius = '14px';
+infoBox.style.boxShadow = '0 0 30px rgba(91, 92, 255, 0.28)';
 
 infoBox.style.fontFamily =
     'Arial, sans-serif';
