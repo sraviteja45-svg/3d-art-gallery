@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { PointerLockControls } from
     'three/examples/jsm/controls/PointerLockControls.js';
 
-
+const BASE = import.meta.env.BASE_URL;
 // ==============================
 // SCENE
 // ==============================
@@ -508,7 +508,7 @@ const backgroundSound = new THREE.Audio(listener);
 const audioLoader = new THREE.AudioLoader();
 
 audioLoader.load(
-    '/audio/gallery.mp3',
+    `${BASE}audio/gallery.mp3`,
     function (buffer) {
 
         backgroundSound.setBuffer(buffer);
@@ -828,7 +828,7 @@ function addArtwork(
 // ==============================
 
 addArtwork(
-    '/assets/artwork1.jpg',
+    `${BASE}assets/artwork1.jpg`,
     -8,
     2.6,
     -14.82,
@@ -840,7 +840,7 @@ addArtwork(
 );
 
 addArtwork(
-    '/assets/artwork2.jpg',
+    `${BASE}assets/artwork2.jpg`,
     0,
     2.6,
     -14.82,
@@ -852,7 +852,7 @@ addArtwork(
 );
 
 addArtwork(
-    '/assets/artwork3.jpg',
+    `${BASE}assets/artwork3.jpg`,
     8,
     2.6,
     -14.82,
@@ -869,7 +869,7 @@ addArtwork(
 // ==============================
 
 addArtwork(
-    '/assets/artwork4.jpg',
+    `${BASE}assets/artwork4.jpg`,
     -8,
     2.6,
     14.82,
@@ -881,7 +881,7 @@ addArtwork(
 );
 
 addArtwork(
-    '/assets/artwork5.jpg',
+    `${BASE}assets/artwork5.jpg`,
     8,
     2.6,
     14.82,
